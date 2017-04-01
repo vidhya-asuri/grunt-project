@@ -1,9 +1,13 @@
+var fs = require('fs');
+
 module.exports = function(grunt){
   'use strict';
 
   grunt.initConfig({
     default:{
-       taskOwner: 'Vidhya'
+       taskOwner: 'Vidhya',
+       src: 'js/name.js',
+       dest: 'js/name_default.js'
     },
     taskWithMultipleConfigs: {
        config1:{
@@ -19,6 +23,11 @@ module.exports = function(grunt){
     var done = this.async();
     grunt.config.requires('default.taskOwner');
     grunt.log.writeln('grunt running...' + this.name, 'with options: ' + grunt.config.get('default.taskOwner'));
+    grunt.log.writeln('js file : '+ grunt.config.get('default.src'));
+    fs.readFile(grunt.config.get('default.src'), function(error,data){
+       grunt.log.writeln(data);
+       fs.writeFile(grunt.config.get('default.dest'), data);
+    });
     done();
   });
 
