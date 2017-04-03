@@ -1,0 +1,64 @@
+/* grunt config file used to demonstrate basic features of grunt */ 
+
+var fs = require('fs');
+
+module.exports = function(grunt){
+  'use strict';
+
+  grunt.initConfig({
+    commentProp: ' commentProp - this is a property that contains only a comment',
+    pkg: grunt.file.readJSON('package.json'),
+    default:{
+       taskOwner: 'Vidhya',
+       src: 'js/name.js',
+       dest: 'js/name_default.js',
+       options: {
+         comment: '/* <%=pkg.author %> */' // use this property to add the author's name as a comment 
+       }
+    },
+    taskWithMultipleConfigs: {
+       config1:{
+          message: 'This is the message from config1',
+          files: { 
+            'js/location_twmc.js': 'js/location.js'  // twmc = task with multiple configs 
+          }
+       },
+       config2: {
+          message: 'This is the message from config2',
+          files: [
+            {
+              src: 'js/location.js',
+              dest: 'js/location_twmc.js'
+            }
+          ]
+       }
+    }
+  });
+
+  grunt.registerTask('default', 'This is the default task', function(arg1){
+    var done = this.async();
+    var comment = this.options().comment;
+    console.log(comment);
+    grunt.config.requires('default.taskOwner');
+    grunt.log.writeln('grunt running...' + this.name, 'with options: ' + grunt.config.get('default.taskOwner'));
+    grunt.log.writeln('js file : '+ grunt.config.get('default.src'));
+    grunt.log.writeln('js file : '+ grunt.config.get('default.dest'));
+    fs.readFile(grunt.config.get('default.src'), function(error,data){
+       grunt.log.writeln(data);
+       fs.writeFile(grunt.config.get('default.dest'), comment + '\n' + data);
+       done();
+    });
+  });
+
+  grunt.registerMultiTask('taskWithMultipleConfigs','An example task with multiple configs', function(){
+     grunt.log.writeln(this.data.message);
+     this.files.forEach(function(file){
+        grunt.log.writeln(file.src + ' ' + file.dest);
+     });
+  }); 
+
+
+  grunt.registerTask('master_task','Run all tasks (mother of all tasks)',['default']);
+
+
+}
