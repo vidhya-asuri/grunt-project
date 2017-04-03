@@ -11,10 +11,19 @@ module.exports = function(grunt){
     },
     taskWithMultipleConfigs: {
        config1:{
-          message: 'This is the message from config1'
+          message: 'This is the message from config1',
+          files: { 
+            'js/location_twmc.js': 'js/location.js'  // twmc = task with multiple configs 
+          }
        },
        config2: {
-          message: 'This is the message from config2'
+          message: 'This is the message from config2',
+          files: [
+            {
+              src: 'js/location.js',
+              dest: 'js/location_twmc.js'
+            }
+          ]
        }
     }
   });
@@ -31,8 +40,11 @@ module.exports = function(grunt){
     done();
   });
 
-  grunt.registerMultiTask('taskWithMultipleConfigs','An example multi task', function(){
+  grunt.registerMultiTask('taskWithMultipleConfigs','An example task with multiple configs', function(){
      grunt.log.writeln(this.data.message);
+     this.files.forEach(function(file){
+        grunt.log.writeln(file.src + ' ' + file.dest);
+     });
   }); 
 
 
